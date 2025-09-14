@@ -1,6 +1,5 @@
 pipeline {
     agent any
-    tools { sonarQubeScanner 'SonarScanner' }
 
     environment {
         SONARQUBE = credentials('sonar-token')
@@ -34,6 +33,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                // Use the SonarQube environment configured in Jenkins
                 withSonarQubeEnv('SonarQube') {
                     sh '''
                     sonar-scanner \
