@@ -14,9 +14,9 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh '''
+                bat '''
                 python -m venv venv
-                source venv/bin/activate
+                venv\\Scripts\\activate
                 pip install -r requirements.txt
                 '''
             }
@@ -24,8 +24,8 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh '''
-                source venv/bin/activate
+                bat '''
+                venv\\Scripts\\activate
                 python manage.py test
                 '''
             }
@@ -33,15 +33,14 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // Use the SonarQube environment configured in Jenkins
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                    sonar-scanner \
-                      -Dsonar.projectKey=django-todo \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=http://localhost:9000 \
-                      -Dsonar.login=$SONARQUBE
-                    '''
+                    bat """
+                    sonar-scanner ^
+                      -Dsonar.projectKey=django-todo ^
+                      -Dsonar.sources=. ^
+                      -Dsonar.host.url=http://localhost:9000 ^
+                      -Dsonar.login=%SONARQUBE%
+                    """
                 }
             }
         }
