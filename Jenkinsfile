@@ -32,17 +32,18 @@ pipeline {
         }
 
         stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat """
-                    sonar-scanner ^
-                      -Dsonar.projectKey=django-todo ^
-                      -Dsonar.sources=. ^
-                      -Dsonar.host.url=http://localhost:9000 ^
-                      -Dsonar.login=%SONARQUBE%
-                    """
-                }
-            }
+    steps {
+        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONARQUBE')]) {
+            bat """
+            docker run --rm ^
+                -e SONAR_HOST_URL="http://host.docker.internal:9000" ^
+                -e SONAR_LOGIN="%SONARQUBE%" ^
+                -v %cd%:/usr/src ^
+                sonarsource/sonar-scanner-cli
+            """
         }
+    }
+}
+
     }
 }
